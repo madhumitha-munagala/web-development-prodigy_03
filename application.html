@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Game</title>
+    <style>
+        /* Basic reset and styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #FF6347, #FFD700, #32CD32, #8A2BE2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
+        .game-container {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #333;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            color: black; /* Default text color for 'X' and 'O' */
+        }
+
+        .cell:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Custom styles for 'X' and 'O' text colors */
+        .cell.x {
+            color: #FF6347; /* Red color for 'X' */
+        }
+
+        .cell.o {
+            color: #32CD32; /* Green color for 'O' */
+        }
+
+        .status {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>Tic-Tac-Toe</h1>
+    <div class="board" id="board"></div>
+    <div class="status" id="status">Player X's turn</div>
+    <button onclick="resetGame()">Restart Game</button>
+</div>
+
+<script>
+    let currentPlayer = 'X';
+    let board = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = true;
+
+    const boardElement = document.getElementById('board');
+    const statusElement = document.getElementById('status');
+
+    // Function to render the game board
+    function renderBoard() {
+        boardElement.innerHTML = ''; // Clear the board
+        board.forEach((cell, index) => {
+            const cellElement = document.createElement('div');
+            cellElement.classList.add('cell');
+            cellElement.textContent = cell; // Display the 'X' or 'O'
+            if (cell === 'X') {
+                cellElement.classList.add('x');
+            } else if (cell === 'O') {
+                cellElement.classList.add('o');
+            }
+            cellElement.addEventListener('click', () => handleClick(index));
+            boardElement.appendChild(cellElement);
+        });
+    }
+
+    // Function to handle a cell click
+    function handleClick(index) {
+        if (board[index] !== '' || !gameActive) return; // If the cell is not empty or game is over, do nothing
+
+        board[index] = currentPlayer; // Place the current player's mark
+        renderBoard();  // Re-render the board with the updated cell
+        checkWinner();  // Check if the current move results in a win or draw
+        if (gameActive) switchPlayer();  // Switch to the next player if the game is still active
+    }
+
+    // Function to check for a winner or draw
+    function checkWinner() {
+        const winPatterns = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+        ];
+
+        // Check each winning pattern
+        for (let pattern of winPatterns) {
+            const [a, b, c] = pattern;
+            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                gameActive = false;
+                statusElement.textContent = `${currentPlayer} wins!`;
+                return;
+            }
+        }
+
+        // Check if the board is full (draw)
+        if (board.every(cell => cell !== '')) {
+            gameActive = false;
+            statusElement.textContent = 'It\'s a draw!';
+        } else {
+            statusElement.textContent = `Player ${currentPlayer}'s turn`;
+        }
+    }
+
+    // Function to switch players
+    function switchPlayer() {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+
+    // Function to reset the game
+    function resetGame() {
+        board = ['', '', '', '', '', '', '', '', ''];
+        gameActive = true;
+        currentPlayer = 'X';
+        renderBoard();
+        statusElement.textContent = `Player ${currentPlayer}'s turn`;
+    }
+
+    // Initialize the game
+    renderBoard();
+</script>
+
+</body>
+</html>
